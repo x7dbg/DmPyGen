@@ -26,35 +26,41 @@ DmPyGen - 大漠插件 Python 类生成器
         python dm_generator.py --dll ./dm.dll --reg ./DmReg.dll -o dm_soft.py
 
     【方式3】代码中调用
-        from FILENAME import from dmsoft import DmSoft
+        from dm_generator import generate_class
 
         # 生成内置接口版本
-        code = generate_class("DmSoft")
+        code = generate_class(DM_INTERFACE, "DmSoft")
         with open("dm_soft.py", "w", encoding="utf-8") as f:
             f.write(code)
 
 生成后的使用示例：
     from dm_soft import DmSoft
 
-    # 初始化（免注册调用）
+    # 方式1：已注册调用（需先用 regsvr32 注册 dm.dll）
+    dm = DmSoft()
+
+    # 方式2：免注册调用（指定 dm.dll 和 DmReg.dll 路径）
     dm = DmSoft(dll_path=r"C:\path\to\dm.dll", reg_dll_path=r"C:\path\to\DmReg.dll")
 
+    # 方式3：免注册调用（只指定 dm.dll，自动找同目录的 DmReg.dll）
+    dm = DmSoft(dll_path=r"C:\path\to\dm.dll")
+
     # 注册插件
-    ret = dm.reg("你的注册码", "")
+    ret = dm.Reg("你的注册码", "")
 
     # 找图（有完整代码提示！）
-    result = dm.find_pic(0, 0, 1920, 1080, "test.bmp", "000000", 0.9, 0)
+    result = dm.FindPic(0, 0, 1920, 1080, "test.bmp", "000000", 0.9, 0)
 
     # 防检测随机移动
-    point = dm.move_to_ex(100, 100, 50, 50)
+    point = dm.MoveToEx(100, 100, 50, 50)
 
     # 随机延时
-    dm.delays(1000, 3000)
+    dm.Delays(1000, 3000)
 
 依赖：
     pip install pywin32
 
-项目地址：https://github.com/yourname/DmPyGen
+项目地址：https://github.com/x7dbg/DmPyGen
 许可证：MIT License
 """
 

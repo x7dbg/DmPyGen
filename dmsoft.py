@@ -45,6 +45,30 @@ class DmSoft:
         """获取大漠插件版本号"""
         return self._dm.Ver()
 
+    def __getattr__(self, name: str):
+        """
+        动态调用未定义的接口
+
+        当调用未在 DM_INTERFACE 中定义的方法时，
+        自动转发到 COM 对象进行调用。
+
+        适用于大漠插件新版本新增的接口，
+        无需更新生成器即可直接调用。
+
+        Args:
+            name: 方法名
+
+        Returns:
+            方法调用结果
+
+        示例:
+            dm.LoadAi("model.onnx")  # 即使 LoadAi 未定义也能调用
+            dm.AiYoloDetectObjects(0, 0, 1920, 1080, 0.85, 0.4)  # 动态调用 AI 接口
+        """
+        if hasattr(self._dm, name):
+            return getattr(self._dm, name)
+        raise AttributeError(f'{self.__class__.__name__} 对象没有 {name} 属性或方法')
+
     def Ver(self, ) -> str:
         """
         获取大漠插件版本号
@@ -2450,6 +2474,346 @@ class DmSoft:
                 1: 成功
         """
         return self._dm.FoobarTextLineDir(hwnd, dir)
+
+    def LoadAi(self, file: str) -> int:
+        """
+        加载AI模块(从后台下载)。加载是全进程生效，同进程只需加载一次。加载过的进程退出时需手动调用TerminateProcess(-1)结束自己，以免造成资源泄露
+
+        Args:
+            file (str): AI模块路径，如：c:\ai.module 或 ai.module(相对路径)。仅支持正式版本
+
+        Returns:
+            整形数:
+                1: 成功
+                -1: 打开文件失败
+                -2: 内存初始化失败(正式版本出现可联系作者)
+                -3: 参数错误
+                -4: 加载错误
+                -5: AI模块初始化失败
+                -6: 内存分配失败
+        """
+        return self._dm.LoadAi(file)
+
+    def UnLoadAi(self, ) -> int:
+        """
+        卸载AI模型
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.UnLoadAi()
+
+    def LoadAiMemory(self, data: int, size: int) -> int:
+        """
+        从内存加载AI模块。加载是全进程生效，同进程只需加载一次。加载过的进程退出时需手动调用TerminateProcess(-1)结束自己，以免造成资源泄露
+
+        Args:
+            data (int): AI模块在内存中的地址
+            size (int): AI模块在内存中的大小
+
+        Returns:
+            整形数:
+                1: 成功
+                -1: 打开文件失败
+                -2: 内存初始化失败(正式版本出现可联系作者)
+                -3: 参数错误
+                -4: 加载错误
+                -5: AI模块初始化失败
+                -6: 内存分配失败
+        """
+        return self._dm.LoadAiMemory(data, size)
+
+    def AiEnableFindPicWindow(self, enable: int) -> int:
+        """
+        设置是否在调用AiFindPicXX系列接口时弹出找图结果调试窗口
+
+        Args:
+            enable (int): 0=关闭调试窗口,1=开启调试窗口
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiEnableFindPicWindow(enable)
+
+    def AiFindPic(self, x1: int, y1: int, x2: int, y2: int, pic_name: str, sim: float, dir: int) -> str:
+        """
+        使用AI模块查找指定区域内的图片(位图必须是24位色格式,支持透明色,当图像上下左右4个顶点颜色一样时该颜色作为透明色处理)。比传统FindPic效果更好，不需要训练。只返回第一个找到的XY坐标。需要ai.module 4.0及其之后的版本
+
+        Args:
+            x1 (int): 查找区域左上角X坐标
+            y1 (int): 查找区域左上角Y坐标
+            x2 (int): 查找区域右下角X坐标
+            y2 (int): 查找区域右下角Y坐标
+            pic_name (str): 图片名，可以是多个图片用|分隔，如：test.bmp|test2.bmp|test3.bmp
+            sim (float): 相似度，取值范围0.1-1.0
+            dir (int): 查找方向：0=从左到右从上到下,1=从左到右从下到上,2=从右到左从上到下,3=从右到左从下到上
+
+        Returns:
+            字符串:
+                -1|-1: 未找到
+                其他: x|y 格式，如: 100,200
+        """
+        return self._dm.AiFindPic(x1, y1, x2, y2, pic_name, sim, dir)
+
+    def AiFindPicEx(self, x1: int, y1: int, x2: int, y2: int, pic_name: str, sim: float, dir: int) -> str:
+        """
+        使用AI模块查找指定区域内的图片(位图必须是24位色格式,支持透明色,当图像上下左右4个顶点颜色一样时该颜色作为透明色处理)。比传统FindPicEx效果更好，不需要训练。返回所有找到的图像坐标。需要ai.module 4.0及其之后的版本
+
+        Args:
+            x1 (int): 查找区域左上角X坐标
+            y1 (int): 查找区域左上角Y坐标
+            x2 (int): 查找区域右下角X坐标
+            y2 (int): 查找区域右下角Y坐标
+            pic_name (str): 图片名，可以是多个图片用|分隔，如：test.bmp|test2.bmp|test3.bmp
+            sim (float): 相似度，取值范围0.1-1.0
+            dir (int): 查找方向：0=从左到右从上到下,1=从左到右从下到上,2=从右到左从上到下,3=从右到左从下到上
+
+        Returns:
+            字符串:
+                : 未找到
+                其他: id,x,y|id,x,y... 格式，如: 0,100,20|2,30,40（最多返回1500个左右）
+        """
+        return self._dm.AiFindPicEx(x1, y1, x2, y2, pic_name, sim, dir)
+
+    def AiFindPicMem(self, x1: int, y1: int, x2: int, y2: int, pic_info: str, sim: float, dir: int) -> str:
+        """
+        使用AI模块从内存中查找指定区域内的图片(位图必须是24位色格式,支持透明色,当图像上下左右4个顶点颜色一样时该颜色作为透明色处理)。比传统FindPicMem效果更好，不需要训练。只返回第一个找到的XY坐标。需要ai.module 4.0及其之后的版本
+
+        Args:
+            x1 (int): 查找区域左上角X坐标
+            y1 (int): 查找区域左上角Y坐标
+            x2 (int): 查找区域右下角X坐标
+            y2 (int): 查找区域右下角Y坐标
+            pic_info (str): 图片数据地址集合，格式为'地址1,长度1|地址2,长度2...|地址n,长度n'，可用AppendPicAddr组合。地址为24位位图资源在内存中的首地址(十进制)，长度为资源在内存中的长度(十进制)
+            sim (float): 相似度，取值范围0.1-1.0
+            dir (int): 查找方向：0=从左到右从上到下,1=从左到右从下到上,2=从右到左从上到下,3=从右到左从下到上
+
+        Returns:
+            字符串:
+                -1|-1: 未找到
+                其他: x|y 格式，如: 100,200
+        """
+        return self._dm.AiFindPicMem(x1, y1, x2, y2, pic_info, sim, dir)
+
+    def AiFindPicMemEx(self, x1: int, y1: int, x2: int, y2: int, pic_info: str, sim: float, dir: int) -> str:
+        """
+        使用AI模块从内存中查找指定区域内的图片。比传统FindPicMemEx效果更好，不需要训练。返回所有找到的图像坐标。需要ai.module 4.0及其之后的版本
+
+        Args:
+            x1 (int): 查找区域左上角X坐标
+            y1 (int): 查找区域左上角Y坐标
+            x2 (int): 查找区域右下角X坐标
+            y2 (int): 查找区域右下角Y坐标
+            pic_info (str): 图片数据地址集合，格式为'地址1,长度1|地址2,长度2...|地址n,长度n'，可用AppendPicAddr组合
+            sim (float): 相似度，取值范围0.1-1.0
+            dir (int): 查找方向：0=从左到右从上到下,1=从左到右从下到上,2=从右到左从上到下,3=从右到左从下到上
+
+        Returns:
+            字符串:
+                : 未找到
+                其他: id,x,y|id,x,y... 格式，如: 0,100,20|2,30,40（最多返回1500个左右）
+        """
+        return self._dm.AiFindPicMemEx(x1, y1, x2, y2, pic_info, sim, dir)
+
+    def AppendPicAddr(self, pic_info: str, addr: int, length: int) -> str:
+        """
+        追加图片数据地址到集合中，用于AiFindPicMem/AiFindPicMemEx
+
+        Args:
+            pic_info (str): 已有的图片数据地址集合，首次调用传空字符串
+            addr (int): 24位位图资源在内存中的首地址(十进制)
+            length (int): 位图资源在内存中的长度(十进制)
+
+        Returns:
+            字符串:
+                : 失败
+                其他: 追加后的图片数据地址集合
+        """
+        return self._dm.AppendPicAddr(pic_info, addr, length)
+
+    def AiYoloUseModel(self, model_index: int) -> int:
+        """
+        设置当前使用的Yolo模型
+
+        Args:
+            model_index (int): 模型序号，从0开始
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloUseModel(model_index)
+
+    def AiYoloDetectObjects(self, x1: int, y1: int, x2: int, y2: int, prob: float, iou: float) -> str:
+        """
+        使用Yolo模型在指定范围内检测对象。需要先调用AiYoloUseModel加载模型。模块内部是全局的，多线程同时执行会排队
+
+        Args:
+            x1 (int): 检测区域左上角X坐标
+            y1 (int): 检测区域左上角Y坐标
+            x2 (int): 检测区域右下角X坐标
+            y2 (int): 检测区域右下角Y坐标
+            prob (float): 置信度阈值(相似度)，超过此值的对象才会被检测，0.0-1.0
+            iou (float): NMS合并阈值，越大越不容易合并(框重叠多)，越小越容易合并(可能误合并正常框)，建议0.4-0.6
+
+        Returns:
+            字符串:
+                : 未检测到
+                其他: 类名,置信度,x,y,w,h|... 格式
+        """
+        return self._dm.AiYoloDetectObjects(x1, y1, x2, y2, prob, iou)
+
+    def AiYoloDetectObjectsToDataBmp(self, x1: int, y1: int, x2: int, y2: int, prob: float, iou: float, data: int, size: int, mode: int) -> int:
+        """
+        使用Yolo模型检测对象并把结果输出到BMP图像数据(用于二次开发)。需要先调用AiYoloUseModel加载模型。模块内部是全局的，多线程同时执行会排队
+
+        Args:
+            x1 (int): 检测区域左上角X坐标
+            y1 (int): 检测区域左上角Y坐标
+            x2 (int): 检测区域右下角X坐标
+            y2 (int): 检测区域右下角Y坐标
+            prob (float): 置信度阈值(相似度)，超过此值的对象才会被检测，0.0-1.0
+            iou (float): NMS合并阈值，越大越不容易合并(框重叠多)，越小越容易合并(可能误合并正常框)，建议0.4-0.6
+            data (int): 返回图片的数据指针(变参)
+            size (int): 返回图片的数据长度(变参)
+            mode (int): 0=绘制文字包含置信度,1=绘制文字不包含置信度
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloDetectObjectsToDataBmp(x1, y1, x2, y2, prob, iou, data, size, mode)
+
+    def AiYoloDetectObjectsToFile(self, x1: int, y1: int, x2: int, y2: int, prob: float, iou: float, file: str, mode: int) -> int:
+        """
+        使用Yolo模型检测对象并把结果输出到指定的BMP文件。需要先调用AiYoloUseModel加载模型。模块内部是全局的，多线程同时执行会排队
+
+        Args:
+            x1 (int): 检测区域左上角X坐标
+            y1 (int): 检测区域左上角Y坐标
+            x2 (int): 检测区域右下角X坐标
+            y2 (int): 检测区域右下角Y坐标
+            prob (float): 置信度阈值(相似度)，超过此值的对象才会被检测，0.0-1.0
+            iou (float): NMS合并阈值，越大越不容易合并(框重叠多)，越小越容易合并(可能误合并正常框)，建议0.4-0.6
+            file (str): 输出图片文件名，如：test.bmp
+            mode (int): 0=绘制文字包含置信度,1=绘制文字不包含置信度
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloDetectObjectsToFile(x1, y1, x2, y2, prob, iou, file, mode)
+
+    def AiYoloFreeModel(self, index: int) -> int:
+        """
+        卸载指定的Yolo模型。模型内部是全局的，调用时需确保没有其他接口访问此模型
+
+        Args:
+            index (int): 模型序号，最多支持20个，从0开始
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloFreeModel(index)
+
+    def AiYoloObjectsToString(self, objects: str) -> str:
+        """
+        把Yolo检测结果中的class信息按顺序连接输出字符串
+
+        Args:
+            objects (str): AiYoloDetectObjects或AiYoloSortsObjects的返回值
+
+        Returns:
+            字符串:
+                : 空结果
+                其他: class信息连接后的字符串
+        """
+        return self._dm.AiYoloObjectsToString(objects)
+
+    def AiYoloSetModel(self, index: int, file: str, pwd: str) -> int:
+        """
+        从文件加载指定的Yolo模型。加载onnx时需确保同名class文件在同目录下(如xxxx.onnx需有xxxx.class)。模型内部是全局的，多线程同时执行会排队
+
+        Args:
+            index (int): 模型序号，最多支持20个，从0开始
+            file (str): 模型文件名，如：xxxx.onnx或xxxx.dmx
+            pwd (str): 模型密码，仅对dmx格式有效
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloSetModel(index, file, pwd)
+
+    def AiYoloSetModelMemory(self, index: int, data: int, size: int, pwd: str) -> int:
+        """
+        从内存加载指定的Yolo模型(仅支持dmx格式)。模型内部是全局的，多线程同时执行会排队
+
+        Args:
+            index (int): 模型序号，最多支持20个，从0开始
+            data (int): dmx模型的内存地址
+            size (int): dmx模型的大小
+            pwd (str): dmx模型的密码
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloSetModelMemory(index, data, size, pwd)
+
+    def AiYoloSetVersion(self, ver: str) -> int:
+        """
+        设置Yolo的版本
+
+        Args:
+            ver (str): Yolo版本信息，目前可选值：v5-7.0。需要在加载Ai模块后第一时间调用
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.AiYoloSetVersion(ver)
+
+    def AiYoloSortsObjects(self, objects: str, height: int) -> str:
+        """
+        把Yolo检测结果按照从上到下、从左到右排序
+
+        Args:
+            objects (str): AiYoloDetectObjects的返回值
+            height (int): 行高信息，用于确定两个检测框是否处于同一行(Y坐标相差绝对值小于此行高则认为是同一行)
+
+        Returns:
+            字符串:
+                : 空结果
+                其他: 类名,置信度,x,y,w,h|... 格式
+        """
+        return self._dm.AiYoloSortsObjects(objects, height)
+
+    def SetDisplayInput(self, input_type: str) -> int:
+        """
+        设置显示输入源
+
+        Args:
+            input_type (str): 输入类型：screen=屏幕,pic:文件名=从图片输入
+
+        Returns:
+            整形数:
+                0: 失败
+                1: 成功
+        """
+        return self._dm.SetDisplayInput(input_type)
 
     def Delay(self, mis: int) -> int:
         """

@@ -69,34 +69,34 @@ def bind_window_demo(dm: DmSoft, hwnd: int):
 
     大漠绑定模式说明：
         display（显示模式）:
-            0 = 正常模式（推荐，最稳定）
-            1 = 后台模式（窗口可以被遮挡）
-            2 = 超级后台模式
+            "normal"  = 正常模式（推荐，最稳定）
+            "gdi"     = gdi 后台模式（窗口可被遮挡）
+            "gdi2"    = gdi2 后台模式
+            "dx2"     = dx2 后台模式（部分游戏适用）
+            "opengl"  = opengl 后台模式
 
         mouse（鼠标模式）:
-            0 = 正常模式
-            1 = 后台模式（后台发送鼠标消息）
-            2 = 驱动模式（需要管理员权限）
+            "normal"    = 正常模式
+            "windows"   = windows 消息模式（后台）
+            "windows3"  = windows3 消息模式
 
         keypad（键盘模式）:
-            0 = 正常模式
-            1 = 后台模式
-            2 = 驱动模式
+            "normal"   = 正常模式
+            "windows"  = windows 消息模式（后台）
 
-        mode（附加模式）:
+        mode（绑定模式）:
             0 = 推荐模式
-            1 = 兼容模式
-            2 = 高速模式
+            1 = 高级模式
     """
 
     print("\n=== 绑定窗口示例 ===\n")
 
     # 绑定窗口（后台模式）
-    # display=1: 后台显示，窗口可以被遮挡
-    # mouse=1: 后台鼠标
-    # keypad=1: 后台键盘
+    # display="gdi": gdi 后台，窗口可被遮挡
+    # mouse="windows": 后台鼠标消息
+    # keypad="windows": 后台键盘消息
     # mode=0: 推荐模式
-    ret = dm.BindWindow(hwnd, display=1, mouse=1, keypad=1, mode=0)
+    ret = dm.BindWindow(hwnd, display="gdi", mouse="windows", keypad="windows", mode=0)
 
     if ret == 1:
         print(f"窗口绑定成功！hwnd={hwnd}")

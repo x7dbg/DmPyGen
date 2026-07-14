@@ -383,4 +383,132 @@ python dm_generator.py
 **优点**：
 - 所有方法都有完整的参数定义
 - 每个参数都有中文描述（如：`x1 (int): 查找区域左上角X坐标`）
-- 每个返回值都有详细说明（如：`{1:
+- 每个返回值都有详细说明（如：`{1: "成功", 0: "失败"}`）
+- 代码提示最准确，IDE 可以自动补全和类型检查
+
+**缺点**：
+- 可能缺少最新版本大漠插件新增的方法
+
+### 模式2：动态反射模式
+
+从 COM 对象动态提取所有方法名。
+
+```bash
+python dm_generator.py --dll ./dm.dll --reg ./DmReg.dll
+# 选择 [2]
+```
+
+**优点**：
+- 包含所有方法，包括最新版本新增的
+- 不需要维护接口列表
+
+**缺点**：
+- 参数信息不全（所有参数都是 `*args`）
+- 没有中文注释
+- 代码提示不够准确
+
+### 模式3：混合模式
+
+内置接口 + 动态提取的额外方法，兼顾完整性和准确性。
+
+```bash
+python dm_generator.py --dll ./dm.dll --reg ./DmReg.dll --dynamic
+# 选择 [3]
+```
+
+**优点**：
+- 内置方法有完整参数和注释
+- 动态方法补充最新接口
+
+**缺点**：
+- 动态提取的方法没有参数提示
+
+---
+
+## 📁 项目结构
+
+```
+DmPyGen/
+├── LICENSE                 # MIT 许可证
+├── README.md              # 项目说明
+├── dm_generator.py        # 代码生成器（核心）
+├── dmsoft.py              # 生成的封装类示例
+├── requirements.txt       # 依赖文件
+└── examples/              # 示例代码
+    ├── 01_basic_usage.py       # 基础使用
+    ├── 02_find_and_click.py    # 找图点击
+    ├── 03_window_bind.py       # 窗口绑定
+    ├── 04_ocr_and_color.py     # 文字识别与找色
+    ├── 05_multithread.py       # 多线程使用
+    ├── 06_anti_detection.py    # 防检测技巧
+    └── README.md               # 示例说明
+```
+
+---
+
+## 📚 示例代码
+
+项目提供了完整的示例代码，位于 `examples/` 目录：
+
+| 示例 | 内容 | 难度 |
+|------|------|------|
+| `01_basic_usage.py` | 初始化、版本获取、鼠标移动 | ⭐ |
+| `02_find_and_click.py` | 找图、解析结果、防检测点击 | ⭐⭐ |
+| `03_window_bind.py` | 查找窗口、后台绑定、后台操作 | ⭐⭐ |
+| `04_ocr_and_color.py` | OCR、颜色查找、颜色比较 | ⭐⭐ |
+| `05_multithread.py` | 多线程找图、线程池 | ⭐⭐⭐ |
+| `06_anti_detection.py` | 随机延时、人类轨迹、模拟点击 | ⭐⭐⭐ |
+
+快速运行示例：
+
+```bash
+# 基础示例
+python examples/01_basic_usage.py
+
+# 找图点击示例（需修改图片路径）
+python examples/02_find_and_click.py
+```
+
+---
+
+## 🤝 贡献指南
+
+欢迎提交 Issue 和 Pull Request！
+
+### 提交 Issue
+
+- 描述清楚问题和复现步骤
+- 提供环境信息（Python版本、系统版本）
+- 如果有错误信息，请贴出完整报错
+
+### 提交 PR
+
+1. Fork 本仓库
+2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 打开一个 Pull Request
+
+---
+
+## 📄 许可证
+
+本项目基于 [MIT](LICENSE) 许可证开源。
+
+---
+
+## 🙏 致谢
+
+- [大漠插件](http://www.dmplugin.net/) - 提供强大的 Windows 自动化功能
+- [pywin32](https://github.com/mhammond/pywin32) - Python Windows 扩展
+
+---
+
+## 📮 联系方式
+
+- GitHub: [@x7dbg](https://github.com/x7dbg)
+- 项目地址: [https://github.com/x7dbg/DmPyGen](https://github.com/x7dbg/DmPyGen)
+
+---
+
+> ⚠️ **免责声明**：本项目仅供学习和研究使用，请勿用于非法用途。使用大漠插件进行游戏自动化可能违反游戏服务条款，请自行承担风险。

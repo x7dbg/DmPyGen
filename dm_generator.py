@@ -1,15 +1,61 @@
 # -*- coding: UTF-8 -*-
 """
-大漠插件 Python 类生成器
+DmPyGen - 大漠插件 Python 类生成器
+
+一键生成大漠插件(dm.dll)的 Python 封装类，包含 200+ 个接口方法，
+完整的类型注解和中文注释，让你写游戏自动化脚本时有完美的代码提示！
 
 支持多种生成模式：
-1. 内置接口模式：使用预定义的大漠接口列表（最完整，有参数提示）
-2. 动态反射模式：从 COM 对象提取方法（方法名准确，但参数信息不全）
-3. 混合模式：内置接口 + 动态提取的额外方法
+    1. 内置接口模式 ⭐推荐：使用预定义的大漠接口列表（参数完整，有中文注释）
+    2. 动态反射模式：从 COM 对象动态提取方法（包含最新接口，但参数信息不全）
+    3. 混合模式：内置接口 + 动态提取的额外方法（兼顾完整性和准确性）
 
 使用方法：
-    直接运行: python 09.py
-    命令行:   python 09.py --dll dm.dll --reg DmReg.dll --dynamic -o dm_soft.py
+    【方式1】交互式菜单（推荐）
+        python 09.py
+        按提示选择生成方式即可
+
+    【方式2】命令行直接生成
+        # 仅使用内置接口（参数完整，有中文注释）
+        python 09.py -o dm_soft.py
+
+        # 混合模式（内置 + 动态提取）
+        python 09.py --dll ./dm.dll --reg ./DmReg.dll --dynamic -o dm_soft.py
+
+        # 动态模式（从 COM 提取所有方法）
+        python 09.py --dll ./dm.dll --reg ./DmReg.dll -o dm_soft.py
+
+    【方式3】代码中调用
+        from dm_generator import generate_class
+
+        # 生成内置接口版本
+        code = generate_class("DmSoft")
+        with open("dm_soft.py", "w", encoding="utf-8") as f:
+            f.write(code)
+
+生成后的使用示例：
+    from dm_soft import DmSoft
+
+    # 初始化（免注册调用）
+    dm = DmSoft(dll_path=r"C:\path\to\dm.dll", reg_dll_path=r"C:\path\to\DmReg.dll")
+
+    # 注册插件
+    ret = dm.reg("你的注册码", "")
+
+    # 找图（有完整代码提示！）
+    result = dm.find_pic(0, 0, 1920, 1080, "test.bmp", "000000", 0.9, 0)
+
+    # 防检测随机移动
+    point = dm.move_to_ex(100, 100, 50, 50)
+
+    # 随机延时
+    dm.delays(1000, 3000)
+
+依赖：
+    pip install pywin32
+
+项目地址：https://github.com/yourname/DmPyGen
+许可证：MIT License
 """
 
 import os
@@ -346,17 +392,42 @@ def generate_class(methods: List[Tuple], class_name: str = "DmSoft") -> str:
         # 构建参数列表
         param_defs = ["self"]
         param_calls = []
+        param_docs = []
 
         for param_name, param_type in params:
             param_defs.append(f"{param_name}: {param_type}")
             param_calls.append(param_name)
+            param_docs.append(f"            {param_name}: {param_type} 类型参数")
 
         param_str = ", ".join(param_defs)
         call_str = ", ".join(param_calls)
 
-        # 生成方法
-        lines.append(f"    def {method_name.lower()}(self, {', '.join(param_defs[1:])}) -> {return_type}:")
-        lines.append(f'        """{doc}"""')
+        # 构建完整文档字符串
+        doc_lines = [f'        """']
+        doc_lines.append(f"        {doc}")
+        if param_docs:
+            doc_lines.append("")
+            doc_lines.append("        Args:")
+            doc_lines.extend(param_docs)
+        doc_lines.append("")
+        doc_lines.append("        Returns:")
+        return_type_desc = {
+            "int": "整形数",
+            "str": "字符串",
+            "float": "浮点数",
+            "bool": "布尔值",
+            "Any": "任意类型",
+            "List": "列表",
+            "Tuple": "元组",
+            "Union": "联合类型",
+        }
+        type_desc = return_type_desc.get(return_type, return_type)
+        doc_lines.append(f"            {type_desc}: 返回值")
+        doc_lines.append(f'        """')
+
+        # 生成方法（保持原始大小写）
+        lines.append(f"    def {method_name}(self, {', '.join(param_defs[1:])}) -> {return_type}:")
+        lines.extend(doc_lines)
         lines.append(f"        return self._dm.{method_name}({call_str})")
         lines.append("")
 

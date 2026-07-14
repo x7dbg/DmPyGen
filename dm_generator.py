@@ -76,15 +76,29 @@ from typing import List, Tuple, Optional
 DM_INTERFACE = [
     # ==================== 版本与注册 ====================
     ("Ver", [], "str", "获取大漠插件版本号", None),
-    ("Reg", [("reg_code", "str"), ("ver_info", "str")], "int", "注册大漠插件（标准注册，绑定机器码）",
+    ("Reg", [
+        ("reg_code", "str", "注册码，从大漠官网购买获得"),
+        ("ver_info", "str", "版本附加信息，一般留空即可")
+    ], "int", "注册大漠插件（标准注册，绑定机器码）",
      {1: "成功", 2: "余额不足", -1: "无法连接网络", -2: "进程没有以管理员方式运行"}),
-    ("RegEx", [("reg_code", "str"), ("ver_info", "str"), ("ip", "str")], "int", "注册大漠插件（高级注册，可指定IP）",
+    ("RegEx", [
+        ("reg_code", "str", "注册码，从大漠官网购买获得"),
+        ("ver_info", "str", "版本附加信息，一般留空即可"),
+        ("ip", "str", "指定IP地址，用于多机注册")
+    ], "int", "注册大漠插件（高级注册，可指定IP）",
      {1: "成功", 2: "余额不足", -1: "无法连接网络", -2: "进程没有以管理员方式运行"}),
-    ("RegNoMac", [("reg_code", "str"), ("ver_info", "str")], "int", "注册大漠插件（不绑定机器码）",
+    ("RegNoMac", [
+        ("reg_code", "str", "注册码，从大漠官网购买获得"),
+        ("ver_info", "str", "版本附加信息，一般留空即可")
+    ], "int", "注册大漠插件（不绑定机器码）",
      {1: "成功", 2: "余额不足", -1: "无法连接网络", -2: "进程没有以管理员方式运行"}),
-    ("RegExNoMac", [("reg_code", "str"), ("ver_info", "str"), ("ip", "str")], "int", "注册大漠插件（高级不绑定机器码）",
+    ("RegExNoMac", [
+        ("reg_code", "str", "注册码，从大漠官网购买获得"),
+        ("ver_info", "str", "版本附加信息，一般留空即可"),
+        ("ip", "str", "指定IP地址，用于多机注册")
+    ], "int", "注册大漠插件（高级不绑定机器码）",
      {1: "成功", 2: "余额不足", -1: "无法连接网络", -2: "进程没有以管理员方式运行"}),
-    ("SetExePath", [("path", "str")], "int", "设置可执行文件路径", {1: "成功", 0: "失败"}),
+    ("SetExePath", [("path", "str", "可执行文件路径，用于设置插件工作目录")], "int", "设置可执行文件路径", {1: "成功", 0: "失败"}),
     ("GetID", [], "int", "获取当前对象ID", None),
     ("GetLastError", [], "int", "获取最后错误码",
      {0: "无错误", -1: "错误", -2: "进程没有以管理员方式运行"}),
@@ -92,21 +106,39 @@ DM_INTERFACE = [
     ("GetMachineCodeNoMac", [], "str", "获取机器码（不包含MAC地址）", None),
 
     # ==================== 窗口操作 ====================
-    ("FindWindow", [("class_name", "str"), ("title", "str")], "int", "查找窗口",
+    ("FindWindow", [
+        ("class_name", "str", "窗口类名，可用Spy++查看，为空字符串表示匹配所有"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有")
+    ], "int", "查找窗口",
      {0: "未找到", "其他": "窗口句柄"}),
-    ("FindWindowEx", [("parent", "int"), ("class_name", "str"), ("title", "str")], "int", "查找子窗口",
+    ("FindWindowEx", [
+        ("parent", "int", "父窗口句柄，0表示桌面窗口"),
+        ("class_name", "str", "窗口类名，可用Spy++查看"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有")
+    ], "int", "查找子窗口",
      {0: "未找到", "其他": "窗口句柄"}),
-    ("FindWindowByProcess", [("process_name", "str"), ("class_name", "str"), ("title", "str")], "int", "通过进程名查找窗口",
+    ("FindWindowByProcess", [
+        ("process_name", "str", "进程名，如：notepad.exe"),
+        ("class_name", "str", "窗口类名，为空字符串表示匹配所有"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有")
+    ], "int", "通过进程名查找窗口",
      {0: "未找到", "其他": "窗口句柄"}),
-    ("FindWindowByProcessId", [("process_id", "int"), ("class_name", "str"), ("title", "str")], "int", "通过进程ID查找窗口",
+    ("FindWindowByProcessId", [
+        ("process_id", "int", "进程ID（PID）"),
+        ("class_name", "str", "窗口类名，为空字符串表示匹配所有"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有")
+    ], "int", "通过进程ID查找窗口",
      {0: "未找到", "其他": "窗口句柄"}),
-    ("GetWindow", [("hwnd", "int"), ("flag", "int")], "int", "获取指定窗口",
+    ("GetWindow", [
+        ("hwnd", "int", "窗口句柄"),
+        ("flag", "int", "获取方式：0父窗口,1第一个子窗口,2前一个兄弟窗口,3后一个兄弟窗口")
+    ], "int", "获取指定窗口",
      {0: "失败", "其他": "窗口句柄"}),
-    ("GetWindowRect", [("hwnd", "int")], "str", "获取窗口矩形坐标",
+    ("GetWindowRect", [("hwnd", "int", "窗口句柄")], "str", "获取窗口矩形坐标",
      {"格式": "x1,y1,x2,y2"}),
-    ("GetWindowTitle", [("hwnd", "int")], "str", "获取窗口标题",
+    ("GetWindowTitle", [("hwnd", "int", "窗口句柄")], "str", "获取窗口标题",
      {"": "失败", "其他": "窗口标题"}),
-    ("GetWindowClass", [("hwnd", "int")], "str", "获取窗口类名",
+    ("GetWindowClass", [("hwnd", "int", "窗口句柄")], "str", "获取窗口类名",
      {"": "失败", "其他": "窗口类名"}),
     ("GetForegroundWindow", [], "int", "获取前台窗口句柄",
      {0: "失败", "其他": "窗口句柄"}),
@@ -114,41 +146,90 @@ DM_INTERFACE = [
      {0: "失败", "其他": "窗口句柄"}),
     ("GetMousePointWindow", [], "int", "获取鼠标指向的窗口句柄",
      {0: "失败", "其他": "窗口句柄"}),
-    ("GetPointWindow", [("x", "int"), ("y", "int")], "int", "获取指定坐标点的窗口句柄",
+    ("GetPointWindow", [
+        ("x", "int", "屏幕X坐标"),
+        ("y", "int", "屏幕Y坐标")
+    ], "int", "获取指定坐标点的窗口句柄",
      {0: "失败", "其他": "窗口句柄"}),
-    ("GetSpecialWindow", [("flag", "int")], "int", "获取特殊窗口句柄",
+    ("GetSpecialWindow", [("flag", "int", "0=桌面窗口,1=任务栏窗口,2=开始按钮,3=托盘窗口")], "int", "获取特殊窗口句柄",
      {0: "桌面窗口", 1: "任务栏窗口", 2: "开始按钮", 3: "托盘窗口"}),
-    ("GetWindowProcessId", [("hwnd", "int")], "int", "获取窗口所属进程ID",
+    ("GetWindowProcessId", [("hwnd", "int", "窗口句柄")], "int", "获取窗口所属进程ID",
      {0: "失败", "其他": "进程ID"}),
-    ("GetWindowThreadId", [("hwnd", "int")], "int", "获取窗口所属线程ID",
+    ("GetWindowThreadId", [("hwnd", "int", "窗口句柄")], "int", "获取窗口所属线程ID",
      {0: "失败", "其他": "线程ID"}),
-    ("MoveWindow", [("hwnd", "int"), ("x", "int"), ("y", "int")], "int", "移动窗口",
+    ("MoveWindow", [
+        ("hwnd", "int", "窗口句柄"),
+        ("x", "int", "新的X坐标"),
+        ("y", "int", "新的Y坐标")
+    ], "int", "移动窗口",
      {0: "失败", 1: "成功"}),
-    ("SetWindowState", [("hwnd", "int"), ("flag", "int")], "int", "设置窗口状态",
+    ("SetWindowState", [
+        ("hwnd", "int", "窗口句柄"),
+        ("flag", "int", "0=关闭,1=激活,2=最小化,3=最大化,4=还原,5=置顶,6=取消置顶,7=禁用,8=启用,9=隐藏,10=显示,11=闪烁标题,12=停止闪烁")
+    ], "int", "设置窗口状态",
      {0: "关闭", 1: "激活", 2: "最小化", 3: "最大化", 4: "还原", 5: "置顶", 6: "取消置顶", 7: "禁用", 8: "启用", 9: "隐藏", 10: "显示", 11: "闪烁标题", 12: "停止闪烁"}),
-    ("SetWindowSize", [("hwnd", "int"), ("width", "int"), ("height", "int")], "int", "设置窗口大小",
+    ("SetWindowSize", [
+        ("hwnd", "int", "窗口句柄"),
+        ("width", "int", "新的宽度"),
+        ("height", "int", "新的高度")
+    ], "int", "设置窗口大小",
      {0: "失败", 1: "成功"}),
-    ("SetWindowText", [("hwnd", "int"), ("title", "str")], "int", "设置窗口标题",
+    ("SetWindowText", [
+        ("hwnd", "int", "窗口句柄"),
+        ("title", "str", "新的窗口标题")
+    ], "int", "设置窗口标题",
      {0: "失败", 1: "成功"}),
-    ("SetWindowTransparent", [("hwnd", "int"), ("trans", "int")], "int", "设置窗口透明度",
+    ("SetWindowTransparent", [
+        ("hwnd", "int", "窗口句柄"),
+        ("trans", "int", "透明度值，0-255，0=完全透明，255=不透明")
+    ], "int", "设置窗口透明度",
      {0: "失败", 1: "成功"}),
-    ("EnumWindow", [("parent", "int"), ("title", "str"), ("class_name", "str"), ("filter", "int")], "str", "枚举窗口",
+    ("EnumWindow", [
+        ("parent", "int", "父窗口句柄，0表示枚举顶级窗口"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有"),
+        ("class_name", "str", "窗口类名，为空字符串表示匹配所有"),
+        ("filter", "int", "过滤方式：0=不过滤,1=只枚举可见窗口,2=只枚举有标题的窗口")
+    ], "str", "枚举窗口",
      {"": "未找到", "其他": "窗口句柄列表，格式: hwnd1,hwnd2,..."}),
-    ("EnumWindowByProcess", [("process_name", "str"), ("title", "str"), ("class_name", "str"), ("filter", "int")], "str", "按进程名枚举窗口",
+    ("EnumWindowByProcess", [
+        ("process_name", "str", "进程名，如：notepad.exe"),
+        ("title", "str", "窗口标题，为空字符串表示匹配所有"),
+        ("class_name", "str", "窗口类名，为空字符串表示匹配所有"),
+        ("filter", "int", "过滤方式：0=不过滤,1=只枚举可见窗口,2=只枚举有标题的窗口")
+    ], "str", "按进程名枚举窗口",
      {"": "未找到", "其他": "窗口句柄列表，格式: hwnd1,hwnd2,..."}),
-    ("EnumWindowSuper", [("spec1", "str"), ("flag1", "int"), ("type1", "int"), ("spec2", "str"), ("flag2", "int"), ("type2", "int"), ("sort", "int")], "str", "超级枚举窗口",
+    ("EnumWindowSuper", [
+        ("spec1", "str", "第一个条件，格式：类名|标题|进程名|PID"),
+        ("flag1", "int", "第一个条件匹配方式：0=完全匹配,1=模糊匹配"),
+        ("type1", "int", "第一个条件类型：0=类名,1=标题,2=进程名,3=PID"),
+        ("spec2", "str", "第二个条件，格式同上，为空字符串表示不使用"),
+        ("flag2", "int", "第二个条件匹配方式"),
+        ("type2", "int", "第二个条件类型"),
+        ("sort", "int", "排序方式：0=不排序,1=按窗口Z序排序")
+    ], "str", "超级枚举窗口",
      {"": "未找到", "其他": "窗口句柄列表"}),
-    ("EnumProcess", [("name", "str")], "str", "枚举进程",
+    ("EnumProcess", [("name", "str", "进程名，如：notepad.exe，为空字符串表示枚举所有进程")], "str", "枚举进程",
      {"": "未找到", "其他": "进程ID列表，格式: pid1,pid2,..."}),
-    ("GetProcessInfo", [("pid", "int")], "str", "获取进程信息",
+    ("GetProcessInfo", [("pid", "int", "进程ID")], "str", "获取进程信息",
      {"": "失败", "其他": "进程信息字符串"}),
 
     # ==================== 鼠标操作 ====================
-    ("MoveTo", [("x", "int"), ("y", "int")], "int", "移动鼠标到指定坐标",
+    ("MoveTo", [
+        ("x", "int", "屏幕X坐标"),
+        ("y", "int", "屏幕Y坐标")
+    ], "int", "移动鼠标到指定坐标",
      {0: "失败", 1: "成功"}),
-    ("MoveToEx", [("x", "int"), ("y", "int"), ("w", "int"), ("h", "int")], "str", "移动到目的范围内的任意一点（防检测）",
+    ("MoveToEx", [
+        ("x", "int", "目标区域左上角X坐标"),
+        ("y", "int", "目标区域左上角Y坐标"),
+        ("w", "int", "目标区域宽度"),
+        ("h", "int", "目标区域高度")
+    ], "str", "移动到目的范围内的任意一点（防检测）",
      {"格式": "x,y", "示例": "101,102"}),
-    ("MoveR", [("rx", "int"), ("ry", "int")], "int", "相对移动鼠标",
+    ("MoveR", [
+        ("rx", "int", "相对X偏移量，正数向右负数向左"),
+        ("ry", "int", "相对Y偏移量，正数向下负数向上")
+    ], "int", "相对移动鼠标",
      {0: "失败", 1: "成功"}),
     ("LeftClick", [], "int", "左键单击",
      {0: "失败", 1: "成功"}),
@@ -174,131 +255,351 @@ DM_INTERFACE = [
      {"格式": "x,y"}),
     ("GetCursorShape", [], "str", "获取当前鼠标形状",
      {"": "失败", "其他": "鼠标形状字符串"}),
-    ("GetCursorShapeEx", [("type", "int")], "str", "获取当前鼠标形状（扩展）",
+    ("GetCursorShapeEx", [("type", "int", "类型：0=当前形状,1=当前形状+位置")], "str", "获取当前鼠标形状（扩展）",
      {"": "失败", "其他": "鼠标形状字符串"}),
 
     # ==================== 键盘操作 ====================
-    ("KeyPress", [("key_code", "int")], "int", "按键（虚拟键码）",
+    ("KeyPress", [("key_code", "int", "虚拟键码，如：13=回车,32=空格,65=A")], "int", "按键（虚拟键码）",
      {0: "失败", 1: "成功"}),
-    ("KeyDown", [("key_code", "int")], "int", "按下按键",
+    ("KeyDown", [("key_code", "int", "虚拟键码，如：13=回车,32=空格,65=A")], "int", "按下按键",
      {0: "失败", 1: "成功"}),
-    ("KeyUp", [("key_code", "int")], "int", "弹起按键",
+    ("KeyUp", [("key_code", "int", "虚拟键码，如：13=回车,32=空格,65=A")], "int", "弹起按键",
      {0: "失败", 1: "成功"}),
-    ("WaitKey", [("key_code", "int"), ("time_out", "int")], "int", "等待按键",
+    ("WaitKey", [
+        ("key_code", "int", "等待的虚拟键码"),
+        ("time_out", "int", "超时时间，单位毫秒，0表示无限等待")
+    ], "int", "等待按键",
      {0: "超时", 1: "成功"}),
-    ("SendString", [("hwnd", "int"), ("input_str", "str")], "int", "向指定窗口发送字符串",
+    ("SendString", [
+        ("hwnd", "int", "目标窗口句柄"),
+        ("input_str", "str", "要发送的字符串")
+    ], "int", "向指定窗口发送字符串",
      {0: "失败", 1: "成功"}),
-    ("SendStringIme", [("input_str", "str")], "int", "发送字符串（IME方式）",
+    ("SendStringIme", [("input_str", "str", "要发送的字符串，支持中文")], "int", "发送字符串（IME方式）",
      {0: "失败", 1: "成功"}),
-    ("SendString2", [("hwnd", "int"), ("input_str", "str")], "int", "向指定窗口发送字符串（方式2）",
+    ("SendString2", [
+        ("hwnd", "int", "目标窗口句柄"),
+        ("input_str", "str", "要发送的字符串")
+    ], "int", "向指定窗口发送字符串（方式2）",
      {0: "失败", 1: "成功"}),
 
     # ==================== 找图 ====================
-    ("FindPic", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                 ("pic_name", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找图",
+    ("FindPic", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_name", "str", "图片名，多个用|分隔，如：test.bmp|test2.bmp"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间，如：0.9表示90%相似"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找图",
      {"-1|-1|-1": "未找到", "其他": "x|y|index 格式，如: 100,200,0"}),
-    ("FindPicE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                  ("pic_name", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找图（易语言格式）",
+    ("FindPicE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_name", "str", "图片名，多个用|分隔"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找图（易语言格式）",
      {"-1|-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindPicEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                   ("pic_name", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找图（返回所有结果）",
+    ("FindPicEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_name", "str", "图片名，多个用|分隔"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找图（返回所有结果）",
      {"": "未找到", "其他": "多组坐标，格式: x1,y1,index1|x2,y2,index2|..."}),
-    ("FindPicExS", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                    ("pic_name", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找图（返回所有结果，字符串格式）",
+    ("FindPicExS", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_name", "str", "图片名，多个用|分隔"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找图（返回所有结果，字符串格式）",
      {"": "未找到", "其他": "字符串格式结果"}),
-    ("FindPicMem", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                    ("pic_info", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "从内存中找图",
+    ("FindPicMem", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_info", "str", "图片数据，由LoadPic加载到内存后的数据"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "从内存中找图",
      {"-1|-1|-1": "未找到", "其他": "x|y|index 格式"}),
-    ("FindPicMemE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                     ("pic_info", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "从内存中找图（易语言格式）",
+    ("FindPicMemE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_info", "str", "图片数据，由LoadPic加载到内存后的数据"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "从内存中找图（易语言格式）",
      {"-1|-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindPicMemEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                      ("pic_info", "str"), ("delta_color", "str"), ("sim", "float"), ("dir", "int")], "str", "从内存中找图（扩展）",
+    ("FindPicMemEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("pic_info", "str", "图片数据，由LoadPic加载到内存后的数据"),
+        ("delta_color", "str", "偏色，如：000000-FFFFFF表示不偏色"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "从内存中找图（扩展）",
      {"": "未找到", "其他": "多组坐标"}),
     ("SetPicPwd", [("pwd", "str")], "int", "设置图片密码",
      {0: "失败", 1: "成功"}),
 
     # ==================== 找色 ====================
-    ("FindColor", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                   ("color", "str"), ("sim", "float"), ("dir", "int")], "str", "找色",
+    ("FindColor", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("color", "str", "颜色值，格式：RRGGBB，如：FFFFFF"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找色",
      {"-1|-1": "未找到", "其他": "x|y 格式，如: 100,200"}),
-    ("FindColorE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                    ("color", "str"), ("sim", "float"), ("dir", "int")], "str", "找色（易语言格式）",
+    ("FindColorE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("color", "str", "颜色值，格式：RRGGBB"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找色（易语言格式）",
      {"-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindColorEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                     ("color", "str"), ("sim", "float"), ("dir", "int")], "str", "找色（返回所有结果）",
+    ("FindColorEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("color", "str", "颜色值，格式：RRGGBB"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找色（返回所有结果）",
      {"": "未找到", "其他": "多组坐标，格式: x1,y1|x2,y2|..."}),
-    ("FindMultiColor", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                        ("first_color", "str"), ("offset_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找多色",
+    ("FindMultiColor", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("first_color", "str", "主颜色，格式：RRGGBB"),
+        ("offset_color", "str", "偏移颜色，格式：x1-y1-颜色1|x2-y2-颜色2|..."),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找多色",
      {"-1|-1": "未找到", "其他": "x|y 格式"}),
-    ("FindMultiColorE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                         ("first_color", "str"), ("offset_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找多色（易语言格式）",
+    ("FindMultiColorE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("first_color", "str", "主颜色，格式：RRGGBB"),
+        ("offset_color", "str", "偏移颜色，格式：x1-y1-颜色1|x2-y2-颜色2|..."),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找多色（易语言格式）",
      {"-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindMultiColorEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                          ("first_color", "str"), ("offset_color", "str"), ("sim", "float"), ("dir", "int")], "str", "找多色（扩展）",
+    ("FindMultiColorEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("first_color", "str", "主颜色，格式：RRGGBB"),
+        ("offset_color", "str", "偏移颜色，格式：x1-y1-颜色1|x2-y2-颜色2|..."),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("dir", "int", "查找方向：0=从左到右从上到下,1=从右到左,2=从上到下,3=从下到上")
+    ], "str", "找多色（扩展）",
      {"": "未找到", "其他": "多组坐标"}),
-    ("GetColor", [("x", "int"), ("y", "int")], "str", "获取指定点颜色",
+    ("GetColor", [
+        ("x", "int", "屏幕X坐标"),
+        ("y", "int", "屏幕Y坐标")
+    ], "str", "获取指定点颜色",
      {"格式": "RRGGBB", "示例": "FFFFFF"}),
-    ("GetColorBGR", [("x", "int"), ("y", "int")], "str", "获取指定点BGR颜色",
+    ("GetColorBGR", [
+        ("x", "int", "屏幕X坐标"),
+        ("y", "int", "屏幕Y坐标")
+    ], "str", "获取指定点BGR颜色",
      {"格式": "BBGGRR", "示例": "FFFFFF"}),
-    ("GetAveRGB", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int")], "str", "获取区域平均颜色",
+    ("GetAveRGB", [
+        ("x1", "int", "区域左上角X坐标"),
+        ("y1", "int", "区域左上角Y坐标"),
+        ("x2", "int", "区域右下角X坐标"),
+        ("y2", "int", "区域右下角Y坐标")
+    ], "str", "获取区域平均颜色",
      {"格式": "RRGGBB"}),
-    ("GetAveHSV", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int")], "str", "获取区域平均HSV",
+    ("GetAveHSV", [
+        ("x1", "int", "区域左上角X坐标"),
+        ("y1", "int", "区域左上角Y坐标"),
+        ("x2", "int", "区域右下角X坐标"),
+        ("y2", "int", "区域右下角Y坐标")
+    ], "str", "获取区域平均HSV",
      {"格式": "H.S.V"}),
-    ("CmpColor", [("x", "int"), ("y", "int"), ("color", "str"), ("sim", "float")], "int", "比较颜色",
+    ("CmpColor", [
+        ("x", "int", "屏幕X坐标"),
+        ("y", "int", "屏幕Y坐标"),
+        ("color", "str", "要比较的颜色，格式：RRGGBB"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "int", "比较颜色",
      {0: "颜色不匹配", 1: "颜色匹配"}),
-    ("RGB2BGR", [("rgb_color", "str")], "str", "RGB颜色转BGR颜色",
+    ("RGB2BGR", [("rgb_color", "str", "RGB颜色值，格式：RRGGBB")], "str", "RGB颜色转BGR颜色",
      {"格式": "BBGGRR"}),
-    ("BGR2RGB", [("bgr_color", "str")], "str", "BGR颜色转RGB颜色",
+    ("BGR2RGB", [("bgr_color", "str", "BGR颜色值，格式：BBGGRR")], "str", "BGR颜色转RGB颜色",
      {"格式": "RRGGBB"}),
 
     # ==================== 文字识别 ====================
-    ("Ocr", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-             ("color_format", "str"), ("sim", "float")], "str", "文字识别",
+    ("Ocr", [
+        ("x1", "int", "识别区域左上角X坐标"),
+        ("y1", "int", "识别区域左上角Y坐标"),
+        ("x2", "int", "识别区域右下角X坐标"),
+        ("y2", "int", "识别区域右下角Y坐标"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "文字识别",
      {"": "识别失败或未找到文字", "其他": "识别出的文字内容"}),
-    ("OcrEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-               ("color_format", "str"), ("sim", "float")], "str", "文字识别（返回详细坐标）",
+    ("OcrEx", [
+        ("x1", "int", "识别区域左上角X坐标"),
+        ("y1", "int", "识别区域左上角Y坐标"),
+        ("x2", "int", "识别区域右下角X坐标"),
+        ("y2", "int", "识别区域右下角Y坐标"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "文字识别（返回详细坐标）",
      {"": "识别失败", "其他": "格式: 文字1|x1|y1|文字2|x2|y2|..."}),
-    ("OcrInFile", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                   ("color_format", "str"), ("sim", "float"), ("file_name", "str")], "str", "从文件文字识别",
+    ("OcrInFile", [
+        ("x1", "int", "识别区域左上角X坐标"),
+        ("y1", "int", "识别区域左上角Y坐标"),
+        ("x2", "int", "识别区域右下角X坐标"),
+        ("y2", "int", "识别区域右下角Y坐标"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间"),
+        ("file_name", "str", "图片文件名，从该文件识别文字")
+    ], "str", "从文件文字识别",
      {"": "识别失败", "其他": "识别出的文字内容"}),
-    ("FindStr", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                 ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "找字",
+    ("FindStr", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "找字",
      {"-1|-1": "未找到", "其他": "x|y 格式，如: 100,200"}),
-    ("FindStrE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                  ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "找字（易语言格式）",
+    ("FindStrE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "找字（易语言格式）",
      {"-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindStrEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                   ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "找字（返回所有结果）",
+    ("FindStrEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "找字（返回所有结果）",
      {"": "未找到", "其他": "多组坐标，格式: x1,y1|x2,y2|..."}),
-    ("FindStrExS", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                    ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "找字（返回所有结果，字符串格式）",
+    ("FindStrExS", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "找字（返回所有结果，字符串格式）",
      {"": "未找到", "其他": "字符串格式结果"}),
-    ("FindStrFast", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                     ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "快速找字",
+    ("FindStrFast", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "快速找字",
      {"-1|-1": "未找到", "其他": "x|y 格式"}),
-    ("FindStrFastE", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                      ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "快速找字（易语言格式）",
+    ("FindStrFastE", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "快速找字（易语言格式）",
      {"-1|-1": "未找到", "其他": "易语言数组格式"}),
-    ("FindStrFastEx", [("x1", "int"), ("y1", "int"), ("x2", "int"), ("y2", "int"),
-                       ("string", "str"), ("color_format", "str"), ("sim", "float")], "str", "快速找字（扩展）",
+    ("FindStrFastEx", [
+        ("x1", "int", "查找区域左上角X坐标"),
+        ("y1", "int", "查找区域左上角Y坐标"),
+        ("x2", "int", "查找区域右下角X坐标"),
+        ("y2", "int", "查找区域右下角Y坐标"),
+        ("string", "str", "要查找的字符串"),
+        ("color_format", "str", "颜色格式，如：FFFFFF-000000表示白底黑字"),
+        ("sim", "float", "相似度，0.0-1.0之间")
+    ], "str", "快速找字（扩展）",
      {"": "未找到", "其他": "多组坐标"}),
-    ("SetDict", [("index", "int"), ("file_name", "str")], "int", "设置字库文件",
+    ("SetDict", [
+        ("index", "int", "字库索引，0-9之间"),
+        ("file_name", "str", "字库文件路径，如：C:\\test\\test.txt")
+    ], "int", "设置字库文件",
      {0: "失败", 1: "成功"}),
-    ("UseDict", [("index", "int")], "int", "使用指定字库",
+    ("UseDict", [("index", "int", "字库索引，0-9之间")], "int", "使用指定字库",
      {0: "失败", 1: "成功"}),
     ("GetNowDict", [], "int", "获取当前使用的字库索引",
      {"": "未设置字库", "其他": "字库索引"}),
-    ("SetShowErrorMsg", [("show", "int")], "int", "设置是否显示错误信息",
+    ("SetShowErrorMsg", [("show", "int", "0=不显示,1=显示")], "int", "设置是否显示错误信息",
      {0: "不显示", 1: "显示"}),
-    ("SetShowMsg", [("x", "int"), ("y", "int"), ("color", "str"), ("size", "int"), ("msg", "str")], "int", "在屏幕上显示信息",
+    ("SetShowMsg", [
+        ("x", "int", "显示位置X坐标"),
+        ("y", "int", "显示位置Y坐标"),
+        ("color", "str", "文字颜色，格式：RRGGBB"),
+        ("size", "int", "字体大小"),
+        ("msg", "str", "要显示的信息内容")
+    ], "int", "在屏幕上显示信息",
      {0: "失败", 1: "成功"}),
 
     # ==================== 窗口绑定 ====================
-    ("BindWindow", [("hwnd", "int"), ("display", "str"), ("mouse", "str"), ("keypad", "str"), ("mode", "int")], "int", "绑定窗口",
+    ("BindWindow", [
+        ("hwnd", "int", "窗口句柄"),
+        ("display", "str", "显示模式：normal=正常,gdi=gdi后台,gdi2=gdi2后台,dx2=dx2后台,opengl=opengl后台"),
+        ("mouse", "str", "鼠标模式：normal=正常,windows=windows消息,windows3=windows3消息"),
+        ("keypad", "str", "键盘模式：normal=正常,windows=windows消息"),
+        ("mode", "int", "绑定模式：0=推荐模式,1=高级模式")
+    ], "int", "绑定窗口",
      {0: "失败", 1: "成功"}),
-    ("BindWindowEx", [("hwnd", "int"), ("display", "str"), ("mouse", "str"), ("keypad", "str"),
-                      ("public_desc", "str"), ("mode", "int")], "int", "高级绑定窗口",
+    ("BindWindowEx", [
+        ("hwnd", "int", "窗口句柄"),
+        ("display", "str", "显示模式：normal=正常,gdi=gdi后台,gdi2=gdi2后台,dx2=dx2后台,opengl=opengl后台"),
+        ("mouse", "str", "鼠标模式：normal=正常,windows=windows消息,windows3=windows3消息"),
+        ("keypad", "str", "键盘模式：normal=正常,windows=windows消息"),
+        ("public_desc", "str", "公共属性描述，一般留空"),
+        ("mode", "int", "绑定模式：0=推荐模式,1=高级模式")
+    ], "int", "高级绑定窗口",
      {0: "失败", 1: "成功"}),
     ("UnBindWindow", [], "int", "解绑窗口",
      {0: "失败", 1: "成功"}),
@@ -308,15 +609,19 @@ DM_INTERFACE = [
      {0: "未绑定", 1: "已绑定"}),
     ("GetDisplayMode", [], "str", "获取显示器分辨率",
      {"格式": "width,height", "示例": "1920,1080"}),
-    ("SetDisplayInput", [("mode", "str")], "int", "设置显示输入模式",
+    ("SetDisplayInput", [("mode", "str", "输入模式：dx.mouse.input.lock|dx.mouse.input.api|dx.keypad.input.lock")], "int", "设置显示输入模式",
      {0: "失败", 1: "成功"}),
-    ("SetUAC", [("uac", "int")], "int", "设置UAC",
+    ("SetUAC", [("uac", "int", "0=关闭UAC,1=开启UAC")], "int", "设置UAC",
      {0: "失败", 1: "成功"}),
-    ("EnableRealMouse", [("enable", "int"), ("mousedelay", "int"), ("mousestep", "int")], "int", "启用真实鼠标模拟",
+    ("EnableRealMouse", [
+        ("enable", "int", "0=关闭,1=开启"),
+        ("mousedelay", "int", "鼠标移动延迟，单位毫秒"),
+        ("mousestep", "int", "鼠标移动步长")
+    ], "int", "启用真实鼠标模拟",
      {0: "失败", 1: "成功"}),
-    ("EnableRealKeypad", [("enable", "int")], "int", "启用真实键盘模拟",
+    ("EnableRealKeypad", [("enable", "int", "0=关闭,1=开启")], "int", "启用真实键盘模拟",
      {0: "失败", 1: "成功"}),
-    ("EnableKeypadMsg", [("enable", "int")], "int", "启用键盘消息",
+    ("EnableKeypadMsg", [("enable", "int", "0=关闭,1=开启")], "int", "启用键盘消息",
      {0: "失败", 1: "成功"}),
     ("EnableMouseMsg", [("enable", "int")], "int", "启用鼠标消息",
      {0: "失败", 1: "成功"}),
@@ -615,10 +920,21 @@ def generate_class(methods: List[Tuple], class_name: str = "DmSoft") -> str:
         param_calls = []
         param_docs = []
 
-        for param_name, param_type in params:
+        for param_info in params:
+            if len(param_info) == 2:
+                # 旧格式: (参数名, 类型)
+                param_name, param_type = param_info
+                param_desc = ""
+            else:
+                # 新格式: (参数名, 类型, 描述)
+                param_name, param_type, param_desc = param_info
+
             param_defs.append(f"{param_name}: {param_type}")
             param_calls.append(param_name)
-            param_docs.append(f"            {param_name}: {param_type} 类型参数")
+            if param_desc:
+                param_docs.append(f"            {param_name} ({param_type}): {param_desc}")
+            else:
+                param_docs.append(f"            {param_name}: {param_type} 类型参数")
 
         param_str = ", ".join(param_defs)
         call_str = ", ".join(param_calls)
